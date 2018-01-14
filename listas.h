@@ -36,29 +36,18 @@ void insertaFinal(Lista *A,Dato nuevo){
 	if(esVacia(*A)==1){
 		A->inicio=porInsertar;
 	}else{
-		A->fin->sig=porInsertar; 
+		A->fin->sig=porInsertar;  //Verificar porque no deja acceder al miembro con el punto
 	}
 	A->fin=porInsertar;
 	A->tam++;
 }
-/*Nodos adyacentes*/
-int compara(Dato a, Dato b){
-    int verticeA = (int)a;
-    Vertice *verticeB = (Vertice*)b;
-	if(verticeA == verticeB->id){
-		return 1;
+void insertaInicio(Lista *A,Dato nuevo){
+	Nodo *porInsertar=creaNodo(nuevo);
+	if(esVacia(*A)==1){
+		A->fin=porInsertar;
+	}else{
+		porInsertar->sig=A->inicio;
 	}
-	return 0;
-}
-
-Nodo *nodos_adyacentes(Lista A, Dato buscado, int (* compara)(Dato, Dato)){
-    Nodo *aux= A.inicio;
-    while(aux!=NULL && compara(buscado, aux->contenido)!=1){
-		aux= aux->sig;
-   }
-   if(aux==NULL){
-		return aux;
-   }else{
-   		return aux;
-   }
+	A->inicio=porInsertar;
+	A->tam++;
 }

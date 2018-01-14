@@ -1,20 +1,13 @@
-#include  "listas.h"
-#include  "lecturaArchivos.h"
-void crea_grafo(Lista *G);
-void reserva_grafo(Lista *g,int n);
-void setArista(Arista * A,int n);
-void vertices_ady(Lista G);
-void vertice_a_adyacente_b(Lista G);
-Dato capturaIdVertice();
-void imprimeListaGrafo(Lista A);
+#include  "prototipos.h"
 
-main(){
+void main(){
     //Creamos una lista de tipo GRAFO
     Lista Grafo;
     inicializa(&Grafo);
 	crea_grafo(&Grafo);
-	imprimeListaGrafo(Grafo);
-	//vertices_ady(Grafo);
+	dijkstra(&Grafo,0,3);
+	//imprimeListaGrafo(Grafo);
+	
 }
 void crea_grafo(Lista *G){
 	FILE *archivo;
@@ -67,8 +60,181 @@ void setArista(Arista * A,int n){
     creaDatoArista(destino,peso,A);
 }
 /*----------------------------------------------------------------------------*/
+void iniDatoVertice(Vertice *consulta){
+	consulta -> distancia = MAX;
+	consulta -> visitado = 0;
+}
+void iniVertices(Lista *A){
+	Nodo * aux;
+	aux= A->inicio;
+	if(esVacia(*A)!=1){
+		while(aux!=NULL){
+			iniDatoVertice(aux->contenido);
+			aux= aux->sig;
+		}
+	}else{
+		 printf("Lista vacia");
+	}
+}
+Dato regresaNodoMejorPeso(Lista A){
+	Nodo *aux;
+	aux = A.inicio;
+	Vertice a_comparar;
+	int mejorDistancia = 0;
+	int comparador;
+	Nodo *pos = A.inicio;
+	Dato *mejor;
+	while(esVacia(A) != 1 && aux!=NULL){
+		a_comparar = (*(Vertice *)(aux->contenido));
+		comparador = a_comparar.distancia;
+		if(comparador <= mejorDistancia){
+			mejorDistancia = comparador;
+			mejor = pos->contenido;
+			pos = pos->sig;
+		}
+		aux = aux->sig;
+	}
+	return (Dato)mejor;
+}
+void regresarElFinal(Lista *A,Vertice *v){
+	Nodo *aux;
+	aux = A->fin;
+	v = &(*(Vertice*)(aux->contenido));
+}
+Dato regresaElInicio(Lista *A){
+	Dato inicio;
+	Nodo *aux;
+	aux = A->inicio;
+	inicio = (aux->contenido);
+	Vertice *consulta = inicio;
+	consulta -> distancia = 0;
+	return (Dato)inicio;
+}
+Dato obtenenVerticeYBuscalo(Lista *A,int d){
+	Nodo *aux = A->inicio;
+	Vertice a;
+	while(aux != NULL){
+		a = (*(Vertice *)(aux->contenido));
+		if (a.id == d){
+			a.visitado = 1;
+			return aux->contenido;
+		}
+		aux = aux->sig;
+	}
+}
+/*
+void relacion(Lista *caminoCorto, Vertice encontrado , Vertice mejor){
+	if(encontrado.distancia + mejor.distancia < mejor->distancia){
+		
+	}
+}*/
+int verificaEnGrafo(Lista A,int a, int b){
+	int primero = 0;
+	int segundo = 0;
+	Nodo *aux = A.inicio;
+	Dato dComparar;
+	Vertice *vComparar;
+	while(aux != NULL){
+		dComparar = aux->contenido;
+		vComparar = &(*(Vertice *)(dComparar)); 
+		if(vComparar->id == a){primero = 1;}
+		if(vComparar->id == b){segundo = 1;}
+		if(primero && segundo){
+			return 1;
+		}
+		aux = aux->sig;
+	}
+	return 0; 
+}
+int obtenDistanciaDeAdyacente(Lista A,int d){
+	Nodo *aux = A.inicio;
+	Vertice a;
+	while(aux != NULL){
+		a = (*(Vertice *)(aux->contenido));
+		if (a.id == d){
+			return a.distancia;
+		}
+		aux = aux->sig;
+	}
+}
+void unionListaAdyacentes(Lista *A,Vertice u){
+
+}
+void dijkstra (Lista *A,int a, int b){
+	iniVertices(A);
+	int i;
+	int tam;
+	int w = 0;
+	
+	//
+	/*Sacamos de la lista el inicio para recorrer el grafo*/
+	Lista caminoCorto;	inicializa(&caminoCorto);
+	insertaInicio(&caminoCorto,(Dato)obtenenVerticeYBuscalo(A,a));
+	Nodo 	*aux;
+
+	
+	/*--Realizando una lista de adyacencias del ultimo vertice--*/
+	Lista adyacencia; inicializa(&adyacencia);
+	Vertice *ultimo = (Vertice *)malloc(sizeof(Vertice));
+	Nodo *AUX;
+	/*Aristas que recorrera cada Arista adyacente*/
+	Arista 	*a_Recorrer = (Arista *)malloc(sizeof(Vertice));
+	
+	
+	if (verificaEnGrafo(*A,a,b)) {
+		/*Hacemos pop del ultimo vertice del camino más corto
+		 y lo almacenamos en el ultimo vertice*/
+		aux = (caminoCorto.inicio);
+		while(aux != NULL){
+			/*Regresamos el final del la pila de adyacencias*/
+			regresarElFinal(&caminoCorto,ultimo); 
+			/*De nuestra lista de adyacencias obtenemos la ultima lista*/
+			insertaInicio(&adyacencia,ultimo->listaAristas);
+			/*Vamos a recorrer la lista de adyacencias para encontrar el camino más corto*/
+			AUX = adyacencia.inicio;
+			while(AUX != NULL){
+				a_Recorrer = &(*((Arista*)(AUX->contenido)));
+				printf("%d]]]\n\n\n",a_Recorrer->visitado);
+				
+				AUX = AUX -> sig;
+			}
+			aux = aux->sig;
+		}
+			/*
+
+			
+			
+			*/
+			
+		 
+		/*
+			if(ultimo->visitado == 0 && ultimo->id != b){
+				ultimo->visitado = 1;
+				mejor->distancia = MAX;
+				while(AUX != NULL && ultimo->id != b){
+					a = &(*((Arista*)(AUX->contenido)));
+					if(a->visitado == 0 && ultimo->distancia + a->peso < obtenDistanciaDeAdyacente(*A,(int)a->destino)){
+						a->visitado = 1;
+						if(ultimo->distancia + a->peso < mejor -> distancia){
+							obtenenVerticeYBuscalo(*A,a->destino,mejor);
+							mejor->distancia = ultimo->distancia + a->peso ;
+							mejor -> visitado = 1;
+						}
+					}
+					a->visitado = 1;
+					AUX = AUX->sig;
+				}
+				insertaFinal(caminoCorto,(Dato)(mejor));
+			}
+			aux = aux->sig;
+		 }*/
+	}
+	imprimeListaGrafo(caminoCorto);	
+}
+/*-----------------------------------------*/
 void imprimeArista(Arista A){
 	printf("\tDestino: %d  Peso: %d\n", A.destino,A.peso);
+	
 }
 void imprimeListaVertices(Lista A){
 	Arista a;
@@ -105,64 +271,3 @@ void imprimeListaGrafo(Lista A){
 		 printf("Lista vacia");
 	}
 }
-/*-----------------------------------------------------------------------------------*/
-/*captuda id del vertice*/
-Dato capturaIdVertice(){
-	int idNode=-1;
-	/*te pide Vertice buscado*/
-	do{
-		fflush(stdin);
-		printf("\n\tDame Nodo Buscado");
-    	scanf("\t%d",&idNode);	
-	}while(idNode<0);
-	return (Dato)idNode;
-}
-/*todas las adyacencias de nodo buscado*/
-void vertices_ady(Lista G){
-	Dato idNode;
-	Nodo node;
-	Vertice verticeResult;
-	Lista *listaAristas;
-	Nodo *nodo;
-	Dato arista;
-	
-	idNode= capturaIdVertice();						//modifique
-    node=*(Nodo*)nodos_adyacentes(G,idNode,compara);//modifique 
-    verticeResult=*(Vertice*)node.contenido;
-    listaAristas=(Lista*)verticeResult.listaAristas;
-    nodo =listaAristas->inicio;
-    
-    while(nodo!=NULL){
- 		arista= (nodo->contenido);
-    	imprimeDatoArista(arista);
-		nodo= nodo->sig;
-	}	   
-}
-
-/*Adyacencia entre nodo A y Nodo B*/
-void vertice_a_adyacente_b(Lista G){
-	Dato idNodeA;/*nodo A a comparar*/
-	Dato idNodeB;/*nodo B a comparar*/
-
-	Nodo node;
-	Vertice verticeResult;
-	Lista *listaAristas;
-	Nodo *nodo;
-	Dato arista;
-	
-	idNodeA = capturaIdVertice();
-	idNodeB = capturaIdVertice();
-	node=*(Nodo*)nodos_adyacentes(G,idNodeA,compara);
-    verticeResult=*(Vertice*)node.contenido;
-    listaAristas=(Lista*)verticeResult.listaAristas;
-    nodo =listaAristas->inicio;
-    
-	 while(nodo!=NULL){
- 		arista= (nodo->contenido);
-    	/*imprimeDatoArista(arista);*/
-    	vertexAdyacentes(arista,idNodeB);
-		nodo= nodo->sig;
-	}	   
-	
-}
-
